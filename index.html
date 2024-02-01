@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Claim Notes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    #textOutput {
+      margin-top: 20px;
+      width: 100%;
+      height: 150px;
+    }
+
+    footer {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    /* Style for redline and correction suggestions */
+    span.redline {
+      color: red;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  </style>
+  <script src="Typo.js"></script>
+</head>
+<body>
+
+  <h1>Medical Claim Notes</h1>
+
+  <!-- The main form with basic details -->
+  <form id="claimForm">
+    <label for="lineNumber">Line Number:</label>
+    <input type="text" id="lineNumber" name="lineNumber" required><br>
+
+    <label for="previewText">Preview Box:</label>
+    <textarea id="previewText" name="previewText" rows="4" cols="50" required></textarea><br>
+
+    <label for="calledTo">Called To Box:</label>
+    <input type="text" id="calledTo" name="calledTo" required><br>
+
+    <label for="numberBox">Number Box:</label>
+    <input type="text" id="numberBox" name="numberBox" required><br>
+
+    <label for="speakWith">Speak With Box:</label>
+    <input type="text" id="speakWith" name="speakWith" required><br>
+
+    <label for="repInformation">Rep Information Box:</label>
+    <div contenteditable="true" id="repInformation" name="repInformation" spellcheck="true" rows="4" cols="50" required></div><br>
+
+    <label for="claimNumber">Claim# Box:</label>
+    <input type="text" id="claimBox" name="claimBox" required><br>
+
+    <label for="refNumber">Ref# Box:</label>
+    <input type="text" id="refBox" name="refBox" required><br>
+
+    <label for="endScenario">End Scenario:</label>
+    <textarea id="endScenario" name="endScenario" rows="4" cols="50" required></textarea><br>
+
+    <!-- Submit button to finalize the form -->
+    <button type="submit" onclick="submitForm(event, 'claimForm')">Submit</button>
+
+    <!-- Refresh button to reload the page -->
+    <button type="button" onclick="refreshPage()">Refresh</button>
+  </form>
+
+  <!-- Result section to display entered information as text output -->
+  <textarea id="textOutput" rows="10" cols="50" readonly></textarea>
+
+  <footer>Developed by Saalim Labs</footer>
+
+  <script>
+    // Load English dictionary for Typo.js
+    var dictionary = new Typo("en_US");
+
+    // Attach event listener to repInformation div for spell-checking
+    document.getElementById("repInformation").addEventListener("input", function () {
+      spellCheck("repInformation");
+    });
+
+    function spellCheck(elementId) {
+      var element = document.getElementById(elementId);
+      var text = element.innerText;
+
+      // Split text into words
+      var words = text.split(/\s+/);
+
+      // Iterate through words and check spelling
+      var correctedText = words.map(function (word) {
+        if (!dictionary.check(word)) {
+          // Word is misspelled, provide correction suggestions
+          var suggestions = dictionary.suggest(word);
+          return `<span class="redline" data-suggestions="${suggestions.join(',')}">${word}</span>`;
+        } else {
+          return word;
+        }
+      });
+
+      // Update the content with corrected text
+      element.innerHTML = correctedText.join(' ');
+
+      // Attach click event for correction suggestions
+      var spans = element.getElementsByClassName('redline');
+      for (var i = 0; i < spans.length; i++) {
+        spans[i].addEventListener('click', function () {
+          var suggestions = this.getAttribute('data-suggestions').split(',');
+          var correctedWord = prompt("Select a correction:", suggestions[0]);
+          if (correctedWord) {
+            this.innerHTML = correctedWord;
+          }
+        });
+      }
+    }
+
+    function submitForm(event, formId) {
+      // Prevent the default form submission behavior
+      event.preventDefault();
+
+      // Get form data
+      const formData = new FormData(document.getElementById(formId));
+      let resultText = "";
+
+      // Spell check the Rep Information Box using Typo.js
+      const repInformationElement = document.getElementById("repInformation");
+      spellCheck("repInformation");
+
+      // Get the corrected text from the contenteditable div
+      const correctedRepInformation = repInformationElement.innerText;
+
+      // Build the output as a paragraph
+      resultText += `LINE#${formData.get('lineNumber')} AS PER THE REVIEW THE CLAIM GOT DENIED AS ${formData.get('previewText').toUpperCase()} SO CALLED ${formData.get('calledTo').toUpperCase()} @${formData.get('numberBox').toUpperCase()} SW ${formData.get('speakWith').toUpperCase()} REP SAID ${correctedRepInformation.toUpperCase()}`;
+
+      // Include claim and ref box values
+      resultText += ` ,CLAIM#${formData.get('claimBox').toUpperCase()}, REF#${formData.get('refBox').toUpperCase()}`;
+
+      // Add the end scenario
+      resultText += ` ${formData.get('endScenario').toUpperCase()}`;
+
+      // Display the result in the text output box
+      document.getElementById("textOutput").value = resultText;
+    }
+
+    function refreshPage() {
+      // Reload the page
+      location.reload();
+    }
+  </script>
+
+</body>
+</html>
