@@ -111,56 +111,32 @@
   <footer>Developed by Saalim Labs</footer>
 
   <script>
-  // Load Typo.js with an English dictionary
-  const dictionary = new Typo("en_US");
+    function submitForm(event, formId) {
+      // Prevent the default form submission behavior
+      event.preventDefault();
 
-  // Attach event listener to the "Rep Information Box" for input events
-  const repInformationBox = document.getElementById("repInformation");
-  repInformationBox.addEventListener("input", handleInput);
+      // Get form data
+      const formData = new FormData(document.getElementById(formId));
+      let resultText = "";
 
-  function handleInput() {
-    const inputText = repInformationBox.value;
-    const checkedText = spellCheck(inputText);
+      // Build the output as a paragraph
+      resultText += `LINE#${formData.get('lineNumber')} AS PER THE REVIEW THE CLAIM GOT DENIED AS ${formData.get('previewText').toUpperCase()} SO CALLED ${formData.get('calledTo').toUpperCase()} @${formData.get('numberBox').toUpperCase()} SW ${formData.get('speakWith').toUpperCase()} REP SAID ${formData.get('repInformation').toUpperCase()}`;
 
-    repInformationBox.value = checkedText;
+      // Include claim and ref box values
+      resultText += ` CLAIM#${formData.get('claimBox').toUpperCase()}, REF#${formData.get('refBox').toUpperCase()}`;
 
-    // Optionally, you can provide visual feedback for misspelled words
-    if (checkedText !== inputText) {
-      repInformationBox.style.border = "2px solid red"; // Example: Red border for misspelled words
-    } else {
-      repInformationBox.style.border = "1px solid #ccc"; // Reset border for correctly spelled words
+      // Add the end scenario
+      resultText += ` ${formData.get('endScenario').toUpperCase()}`;
+
+      // Display the result in the text output box
+      document.getElementById("textOutput").value = resultText;
     }
-  }
 
-  function spellCheck(text) {
-    const words = text.split(' ');
-    const checkedWords = words.map(word => {
-      const correctedWord = getCorrection(word);
-      return correctedWord ? `*${word} (${correctedWord})*` : word;
-    });
-
-    return checkedWords.join(' ');
-  }
-
-  function getCorrection(word) {
-    const suggestions = dictionary.suggest(word);
-    return suggestions.length > 0 ? suggestions[0] : null;
-  }
-
-  function submitForm(event, formId) {
-    event.preventDefault();
-
-    // Remove the asterisks from the submitted text
-    const formData = new FormData(document.getElementById(formId));
-    const resultText = `LINE#${formData.get('lineNumber')} AS PER THE REVIEW THE CLAIM GOT DENIED AS ${formData.get('previewText').toUpperCase()} SO CALLED ${formData.get('calledTo').toUpperCase()} ${formData.get('numberBox').toUpperCase()} SW ${formData.get('speakWith').toUpperCase()} REP SAID ${spellCheck(formData.get('repInformation').toUpperCase())}`;
-
-    document.getElementById("textOutput").value = resultText;
-  }
-
-  function refreshPage() {
-    location.reload();
-  }
-</script>
+    function refreshPage() {
+      // Reload the page
+      location.reload();
+    }
+  </script>
 
 </body>
 </html>
