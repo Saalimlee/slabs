@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Music Player</title>
+</head>
+<body>
+
+<h1>slabs creation</h1>
+
+<ul id="playlist">
+    <li data-src="guleba.mp3">Song 1</li>
+    <li data-src="shanthi.mp3">Song 2</li>
+    <li data-src="annul.mp3">Song 3</li>
+</ul>
+
+<audio controls id="audioPlayer">
+    Your browser does not support the audio element.
+</audio>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var audioPlayer = document.getElementById('audioPlayer');
+        var playlist = document.getElementById('playlist');
+        var playlistItems = playlist.getElementsByTagName('li');
+
+        for (var i = 0; i < playlistItems.length; i++) {
+            playlistItems[i].addEventListener('click', function () {
+                var songSrc = this.getAttribute('data-src');
+                audioPlayer.src = songSrc;
+                audioPlayer.play();
+            });
+        }
+    });
+</script>
+
+</body>
+</html>
