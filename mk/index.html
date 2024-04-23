@@ -13,33 +13,33 @@
     <li data-src="guleba.mp3">guleba</li>
     <li data-src="shanthi.mp3">shanthi</li>
     <li data-src="annul.mp3">annul</li>
-	<li data-src="frat.mp3">frat</li>
-	<li data-src="kann.mp3">kann</li>
-	<li data-src="pakka.mp3">pakka</li>
-	<li data-src="unna.mp3">unna</li>
-	<li data-src="vele.mp3">vele</li>
-	<li data-src="russio.mp3">russio</li>
-	<li data-src="cheques.mp3">cheques</li>
-<li data-src="sadqa.mp3">sadqa</li>
-	<li data-src="Hey-Mama.mp3">Hey-Mama</li>
-	<li data-src="Jimikki-Kammal.mp3">jimi</li>
-	<li data-src="Kaho Na Kaho.mp3">kahona</li>
-	<li data-src="Lamaallem.mp3">lamaalem</li>
-	<li data-src="Nenjam.mp3">nenjan</li>
-	<li data-src="Ordinary.mp3">ordninary</li>
-	<li data-src="Safari.mp3">safari</li>
-	<li data-src="Sherine.mp3">sherine</li>
-	<li data-src="Vaada.mp3">vaada</li>
-	<li data-src="YKHALIK.mp3">ykhalik</li>
-<li data-src="tourner.mp3">tourner</li>
-<li data-src="kdl.mp3">kdl</li>
-<li data-src="boomi.mp3">boomi</li>
-<li data-src="enkadal.mp3">enkadal</li>
-<li data-src="badboy.mp3">badboy</li>
-<li data-src="thuli.mp3">thuli</li>
-<li data-src="adada.mp3">adada</li>
-<li data-src="dys.mp3">dys</li>
-<li data-src="ily.mp3">ily</li>
+    <li data-src="frat.mp3">frat</li>
+    <li data-src="kann.mp3">kann</li>
+    <li data-src="pakka.mp3">pakka</li>
+    <li data-src="unna.mp3">unna</li>
+    <li data-src="vele.mp3">vele</li>
+    <li data-src="russio.mp3">russio</li>
+    <li data-src="cheques.mp3">cheques</li>
+    <li data-src="sadqa.mp3">sadqa</li>
+    <li data-src="Hey-Mama.mp3">Hey-Mama</li>
+    <li data-src="Jimikki-Kammal.mp3">jimi</li>
+    <li data-src="Kaho Na Kaho.mp3">kahona</li>
+    <li data-src="Lamaallem.mp3">lamaalem</li>
+    <li data-src="Nenjam.mp3">nenjan</li>
+    <li data-src="Ordinary.mp3">ordninary</li>
+    <li data-src="Safari.mp3">safari</li>
+    <li data-src="Sherine.mp3">sherine</li>
+    <li data-src="Vaada.mp3">vaada</li>
+    <li data-src="YKHALIK.mp3">ykhalik</li>
+    <li data-src="tourner.mp3">tourner</li>
+    <li data-src="kdl.mp3">kdl</li>
+    <li data-src="boomi.mp3">boomi</li>
+    <li data-src="enkadal.mp3">enkadal</li>
+    <li data-src="badboy.mp3">badboy</li>
+    <li data-src="thuli.mp3">thuli</li>
+    <li data-src="adada.mp3">adada</li>
+    <li data-src="dys.mp3">dys</li>
+    <li data-src="ily.mp3">ily</li>
 </ul>
 
 <audio controls id="audioPlayer">
@@ -51,12 +51,33 @@
         var audioPlayer = document.getElementById('audioPlayer');
         var playlist = document.getElementById('playlist');
         var playlistItems = playlist.getElementsByTagName('li');
+        var currentIndex = 0;
 
+        function playSong(index) {
+            var songSrc = playlistItems[index].getAttribute('data-src');
+            audioPlayer.src = songSrc;
+            audioPlayer.play();
+        }
+
+        function playNext() {
+            currentIndex = (currentIndex + 1) % playlistItems.length;
+            playSong(currentIndex);
+        }
+
+        // Play the first song initially
+        playSong(currentIndex);
+
+        // Add event listener for ended event
+        audioPlayer.addEventListener('ended', function () {
+            playNext();
+        });
+
+        // Add click event listeners to playlist items
         for (var i = 0; i < playlistItems.length; i++) {
             playlistItems[i].addEventListener('click', function () {
-                var songSrc = this.getAttribute('data-src');
-                audioPlayer.src = songSrc;
-                audioPlayer.play();
+                var index = Array.prototype.indexOf.call(playlistItems, this);
+                currentIndex = index;
+                playSong(currentIndex);
             });
         }
     });
